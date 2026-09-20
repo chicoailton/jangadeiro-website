@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="description" content="Jangadeiro Flight Simulation Engineering — custom aerodynamics, 6-DoF flight dynamics, GNC, SIL/HIL and simulation for UAVs, airships and experimental aircraft." />
+<title>Jangadeiro — Flight Simulation Engineering</title>
+<style>
+:root{--bg:#eaf9fb;--bg2:#d7f3f7;--panel:#f7fdfe;--navy:#073b56;--text:#174f68;--muted:#5f8392;--line:#b9dce2;--accent:#f2a000;--slate:#71858d;--max:1180px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#f6fdfe 0%,#eaf9fb 38%,#dff5f8 100%);color:var(--text);font-family:"Arial Narrow","Roboto Condensed",Inter,ui-sans-serif,system-ui,sans-serif;line-height:1.55}a{color:inherit;text-decoration:none}.wrap{max-width:var(--max);margin:auto;padding:0 28px}
+nav{position:sticky;top:0;z-index:20;background:rgba(247,253,254,.93);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}nav .inner{min-height:92px;display:flex;align-items:center;justify-content:space-between;gap:30px}.brandblock{display:flex;flex-direction:column;line-height:1.08}.brand{font-weight:900;letter-spacing:.15em;font-size:22px;color:var(--navy)}.descriptor{font-size:12px;font-weight:800;letter-spacing:.08em;color:var(--navy);margin-top:5px}.tagline{font-size:10px;letter-spacing:.16em;color:var(--muted);margin-top:5px}.navlinks{display:flex;gap:32px;color:var(--text);font-size:14px;font-weight:700}.navlinks a:hover{color:var(--accent)}
+.hero{min-height:80vh;display:grid;align-items:center;position:relative;overflow:hidden}.hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 78% 38%,rgba(72,196,215,.19),transparent 30%),radial-gradient(circle at 92% 72%,rgba(242,160,0,.07),transparent 22%),linear-gradient(110deg,rgba(255,255,255,.20) 0 55%,rgba(189,235,242,.22) 55% 100%);pointer-events:none}.hero .wrap{position:relative;z-index:1}.eyebrow{color:#a66300;font-size:13px;letter-spacing:.2em;text-transform:uppercase;font-weight:900}.hero h1{font-size:clamp(52px,7.2vw,92px);line-height:.91;letter-spacing:-.035em;margin:24px 0 28px;max-width:940px;color:var(--navy);text-transform:uppercase;font-weight:950}.hero h1 em{font-style:normal;color:var(--navy)}.lead{font-size:clamp(18px,2vw,22px);max-width:690px;color:var(--muted)}.actions{display:flex;gap:14px;margin-top:34px;flex-wrap:wrap}.btn{padding:14px 22px;border-radius:8px;border:1px solid #75aeb9;font-weight:800;font-size:14px;background:rgba(239,250,251,.45)}.btn.primary{background:var(--accent);color:white;border-color:var(--accent)}.btn:hover{transform:translateY(-1px)}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);background:#71858d;border-radius:7px;margin-top:48px;color:white;overflow:hidden}.metric{padding:20px;border-right:1px solid rgba(255,255,255,.24)}.metric:last-child{border-right:0}.metric strong{display:block;font-size:18px;color:white}.metric small{color:#d8edf0;letter-spacing:.04em}
+section{padding:95px 0}.sectionhead{display:grid;grid-template-columns:1fr 1.6fr;gap:60px;margin-bottom:48px}.sectionhead h2{font-size:clamp(34px,4vw,54px);line-height:1.05;margin:0;letter-spacing:-.025em;color:var(--navy);text-transform:uppercase}.sectionhead p{color:var(--muted);font-size:18px;margin:5px 0 0}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.card{background:rgba(255,255,255,.72);border:1px solid var(--line);padding:28px;border-radius:10px;min-height:220px;box-shadow:0 8px 28px rgba(6,60,88,.05)}.num{color:var(--accent);font-family:ui-monospace,monospace;font-size:12px;font-weight:900}.card h3{font-size:21px;margin:35px 0 10px;color:var(--navy)}.card p{color:var(--muted);margin:0}.pipeline{display:flex;align-items:stretch;gap:8px;overflow:auto;padding-bottom:8px}.step{min-width:155px;flex:1;padding:22px 18px;border:1px solid var(--line);background:rgba(255,255,255,.68);border-radius:9px}.arrow{display:grid;place-items:center;color:var(--accent);font-weight:900}.step b{display:block;margin-bottom:7px;color:var(--navy)}.step span{font-size:13px;color:var(--muted)}
+.about{background:rgba(211,241,245,.62);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.quote{font-size:clamp(27px,3vw,42px);line-height:1.25;max-width:980px;letter-spacing:-.02em;color:var(--navy)}.quote span{color:#a35f00}.aboutcopy{max-width:750px;color:var(--muted);font-size:17px;margin-top:28px}.tech{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px}.pill{border:1px solid var(--line);padding:8px 12px;border-radius:999px;color:var(--text);font-size:13px;background:rgba(255,255,255,.35)}
+.contactbox{border:1px solid var(--line);border-radius:14px;padding:50px;background:linear-gradient(135deg,rgba(255,255,255,.86),rgba(180,231,239,.34))}.contactbox h2{font-size:clamp(36px,5vw,62px);margin:0 0 15px;letter-spacing:-.03em;color:var(--navy);text-transform:uppercase}.contactbox p{color:var(--muted);max-width:700px;font-size:18px}.contactrow{display:flex;gap:14px;align-items:center;margin-top:28px;flex-wrap:wrap}footer{padding:32px 0;color:var(--muted);font-size:13px;border-top:1px solid var(--line)}.footerin{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+@media(max-width:800px){nav .inner{min-height:82px}.navlinks{display:none}.brand{font-size:19px}.descriptor{font-size:11px}.metrics{grid-template-columns:1fr 1fr}.metric:nth-child(2){border-right:0}.sectionhead{grid-template-columns:1fr;gap:18px}.cards{grid-template-columns:1fr}.hero{min-height:75vh}.contactbox{padding:30px}.pipeline{align-items:stretch}.arrow{display:none}}
+</style>
+
+<style>
+/* =========================
+   HERO / CAPA
+   ========================= */
+.hero{
+  position:relative;
+  min-height:78vh;
+  overflow:hidden;
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(238,250,252,0.00) 0%,
+      rgba(238,250,252,0.00) 55%,
+      rgba(238,250,252,0.04) 72%,
+      rgba(238,250,252,0.09) 100%
+    ),
+    url('assets/jangadeiro-hero.png') !important;
+  background-size:cover !important;
+  background-position:center center !important;
+  background-repeat:no-repeat !important;
+}
+
+.hero:before{
+  display:none !important;
+}
+
+/* Conteúdo da capa à direita */
+.hero .wrap{
+  position:relative;
+  z-index:2;
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+}
+
+/* Bloco de texto mais estreito e alinhado à direita */
+.hero .eyebrow,
+.hero h1,
+.hero .lead,
+.hero .actions{
+  width:400px;
+  max-width:34vw;
+  text-align:right;
+}
+
+/* Linha pequena superior */
+.hero .eyebrow{
+  font-size:10px;
+  line-height:1.45;
+  letter-spacing:.18em;
+  color:#a66300;
+}
+
+/* Título menor */
+.hero h1{
+  font-size:clamp(30px,2.8vw,46px);
+  line-height:.94;
+  letter-spacing:-.03em;
+  margin:12px 0 16px;
+  color:var(--navy);
+  text-transform:uppercase;
+  font-weight:950;
+  text-shadow:0 1px 0 rgba(255,255,255,.22);
+}
+
+.hero h1 em{
+  font-style:normal;
+  color:var(--navy);
+}
+
+/* Descrição menor */
+.hero .lead{
+  font-size:13px;
+  line-height:1.45;
+  color:var(--text);
+  margin-top:0;
+}
+
+/* Botões alinhados à direita */
+.hero .actions{
+  justify-content:flex-end;
+  margin-top:20px;
+}
+
+/* Barra 6-DoF / GNC / SIL-HIL / CFD */
+.hero .metrics{
+  width:100%;
+  max-width:none;
+  align-self:stretch;
+  margin-top:42px;
+  text-align:left;
+}
+
+/* =========================
+   MOBILE
+   ========================= */
+@media(max-width:850px){
+  .hero{
+    background-image:
+      linear-gradient(
+        180deg,
+        rgba(238,250,252,.14) 0%,
+        rgba(238,250,252,.24) 55%,
+        rgba(238,250,252,.40) 100%
+      ),
+      url('assets/jangadeiro-hero.png') !important;
+    background-position:55% center !important;
+  }
+
+  .hero .wrap{
+    align-items:flex-start;
+  }
+
+  .hero .eyebrow,
+  .hero h1,
+  .hero .lead,
+  .hero .actions{
+    width:100%;
+    max-width:100%;
+    text-align:left;
+  }
+
+  .hero h1{
+    font-size:clamp(36px,10vw,52px);
+  }
+
+  .hero .lead{
+    font-size:14px;
+  }
+
+  .hero .actions{
+    justify-content:flex-start;
+  }
+}
+</style>
+
+
+<style>
+/* ===== FINAL HERO COMPOSITION ===== */
+.hero{
+  min-height:calc(100vh - 92px);
+  display:flex;
+  align-items:stretch;
+  padding:0;
+  background-image:url('assets/jangadeiro-hero.png') !important;
+  background-size:cover !important;
+  background-position:center center !important;
+  background-repeat:no-repeat !important;
+}
+
+.hero:before{
+  content:"" !important;
+  display:block !important;
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg,
+      rgba(234,249,251,0.00) 0%,
+      rgba(234,249,251,0.00) 50%,
+      rgba(244,252,253,0.13) 68%,
+      rgba(250,253,251,0.28) 100%);
+}
+
+.hero .wrap{
+  min-height:calc(100vh - 92px);
+  position:relative;
+  z-index:2;
+  width:100%;
+  display:grid;
+  grid-template-columns:1fr minmax(430px,520px);
+  grid-template-rows:1fr auto;
+  column-gap:40px;
+  align-items:start;
+  padding-top:42px;
+  padding-bottom:0;
+}
+
+/* Right-side copy */
+.hero .eyebrow,
+.hero h1,
+.hero .lead,
+.hero .actions{
+  grid-column:2;
+  width:100%;
+  max-width:none;
+  text-align:left;
+}
+
+.hero .eyebrow{
+  grid-row:1;
+  align-self:start;
+  font-size:11px;
+  line-height:1.35;
+  letter-spacing:.22em;
+  margin:0 0 14px;
+  color:#355d70;
+}
+
+.hero h1{
+  grid-column:2;
+  grid-row:1;
+  align-self:start;
+  font-size:clamp(38px,3.55vw,58px);
+  line-height:.94;
+  letter-spacing:-.035em;
+  margin:36px 0 0;
+  color:var(--navy);
+  text-shadow:none;
+}
+
+.hero h1 em{
+  display:block;
+  color:#e98300;
+  font-style:normal;
+}
+
+.hero .lead{
+  grid-column:2;
+  grid-row:1;
+  align-self:start;
+  margin-top:158px;
+  font-size:16px;
+  line-height:1.45;
+  color:#315d70;
+  max-width:510px;
+}
+
+.hero .actions{
+  grid-column:2;
+  grid-row:1;
+  align-self:start;
+  margin-top:235px;
+  display:flex;
+  justify-content:flex-start;
+  gap:18px;
+}
+
+.hero .btn{
+  min-width:170px;
+  text-align:center;
+  padding:13px 20px;
+  background:rgba(249,253,252,.52);
+  backdrop-filter:blur(3px);
+}
+
+.hero .btn.primary{
+  background:#ed8c00;
+  border-color:#ed8c00;
+  color:#fff;
+}
+
+/* Bottom capability strip: translucent so the sea remains visible */
+.hero .metrics{
+  grid-column:1 / -1;
+  grid-row:2;
+  align-self:end;
+  width:100%;
+  margin:0;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  background:rgba(4,55,78,.42);
+  backdrop-filter:blur(2px);
+  border-radius:0;
+  border-top:1px solid rgba(255,255,255,.32);
+  overflow:hidden;
+}
+
+.hero .metric{
+  min-height:118px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:16px 20px;
+  border-right:1px solid rgba(255,255,255,.48);
+}
+
+.hero .metric:last-child{border-right:0}
+
+.hero .metric strong{
+  font-size:18px;
+  color:#fff;
+  margin-bottom:5px;
+}
+
+.hero .metric small{
+  color:rgba(255,255,255,.90);
+  font-size:12px;
+}
+
+/* Simple line icons */
+.hero .metric strong:before{
+  display:block;
+  font-size:28px;
+  line-height:1;
+  margin-bottom:10px;
+  font-weight:400;
+  color:#fff;
+}
+.hero .metric:nth-child(1) strong:before{content:"✈";}
+.hero .metric:nth-child(2) strong:before{content:"⌘";}
+.hero .metric:nth-child(3) strong:before{content:"◯";}
+.hero .metric:nth-child(4) strong:before{content:"♢";}
+
+/* Reference-like labels */
+.hero .metric:nth-child(1) strong{font-size:0}
+.hero .metric:nth-child(1) strong:after{content:"AIRCRAFT";font-size:18px}
+.hero .metric:nth-child(1) small{font-size:0}
+.hero .metric:nth-child(1) small:after{content:"Flight dynamics & control";font-size:12px}
+
+.hero .metric:nth-child(2) strong{font-size:0}
+.hero .metric:nth-child(2) strong:after{content:"UAVs";font-size:18px}
+.hero .metric:nth-child(2) small{font-size:0}
+.hero .metric:nth-child(2) small:after{content:"Autonomy & simulation";font-size:12px}
+
+.hero .metric:nth-child(3) strong{font-size:0}
+.hero .metric:nth-child(3) strong:after{content:"AIRSHIPS";font-size:18px}
+.hero .metric:nth-child(3) small{font-size:0}
+.hero .metric:nth-child(3) small:after{content:"Lighter-than-air systems";font-size:12px}
+
+.hero .metric:nth-child(4) strong{font-size:0}
+.hero .metric:nth-child(4) strong:after{content:"EXPERIMENTAL VEHICLES";font-size:17px}
+.hero .metric:nth-child(4) small{font-size:0}
+.hero .metric:nth-child(4) small:after{content:"From concept to validation";font-size:12px}
+
+/* Restore icons after hiding original strong text */
+.hero .metric strong:before{font-size:28px !important}
+
+@media(max-width:900px){
+  .hero{
+    min-height:760px;
+    background-position:42% center !important;
+  }
+  .hero .wrap{
+    min-height:760px;
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    padding-top:32px;
+  }
+  .hero:before{
+    background:linear-gradient(180deg,rgba(245,252,253,.58),rgba(245,252,253,.10) 65%);
+  }
+  .hero .eyebrow,.hero h1,.hero .lead,.hero .actions{
+    width:100%;
+    max-width:520px;
+    text-align:left;
+    margin-left:0;
+  }
+  .hero h1{margin-top:14px;font-size:clamp(38px,10vw,54px)}
+  .hero .lead{margin-top:18px;font-size:14px}
+  .hero .actions{margin-top:20px}
+  .hero .metrics{
+    margin-top:auto;
+    grid-template-columns:1fr 1fr;
+  }
+  .hero .metric{min-height:96px}
+}
+</style>
+
+
+<style>
+/* ===== HERO REFINEMENT ===== */
+
+/* right-side copy: smaller, clean spacing, right aligned */
+.hero .eyebrow,
+.hero h1,
+.hero .lead,
+.hero .actions,
+.hero .jangadeiro-quote{
+  grid-column:2;
+  width:100%;
+  max-width:480px;
+  justify-self:end;
+  text-align:right;
+}
+
+.hero .eyebrow{
+  margin-top:0;
+  font-size:9px;
+  line-height:1.35;
+  letter-spacing:.22em;
+}
+
+.hero h1{
+  margin-top:30px;
+  font-size:clamp(30px,2.75vw,44px);
+  line-height:.93;
+  letter-spacing:-.025em;
+}
+
+.hero h1 em{
+  display:block;
+  color:#e98300;
+}
+
+.hero .lead{
+  margin-top:132px;
+  font-size:14px;
+  line-height:1.42;
+  max-width:470px;
+}
+
+.hero .actions{
+  margin-top:202px;
+  justify-content:flex-end;
+}
+
+.hero .jangadeiro-quote{
+  grid-row:1;
+  align-self:start;
+  margin-top:278px;
+  max-width:300px;
+  font-size:14px;
+  line-height:1.45;
+  font-style:italic;
+  color:#315d70;
+}
+
+.hero .jangadeiro-quote:after{
+  content:"";
+  display:block;
+  width:38px;
+  height:3px;
+  margin:14px 0 0 auto;
+  background:#e98300;
+}
+
+/* lower strip: shorter and subtler */
+.hero .metrics{
+  min-height:0;
+  background:rgba(4,55,78,.27);
+  backdrop-filter:blur(1.5px);
+  border-top:1px solid rgba(255,255,255,.25);
+}
+
+.hero .metric{
+  min-height:78px;
+  padding:8px 14px;
+  border-right:1px solid rgba(255,255,255,.34);
+}
+
+.hero .metric strong:before{
+  font-size:20px !important;
+  margin-bottom:5px;
+}
+
+.hero .metric:nth-child(1) strong:after,
+.hero .metric:nth-child(2) strong:after,
+.hero .metric:nth-child(3) strong:after{
+  font-size:14px;
+}
+
+.hero .metric:nth-child(4) strong:after{
+  font-size:13px;
+}
+
+.hero .metric small:after{
+  font-size:10px !important;
+}
+
+/* mobile */
+@media(max-width:900px){
+  .hero .eyebrow,
+  .hero h1,
+  .hero .lead,
+  .hero .actions,
+  .hero .jangadeiro-quote{
+    width:100%;
+    max-width:520px;
+    text-align:left;
+    justify-self:start;
+  }
+
+  .hero h1{
+    margin-top:14px;
+    font-size:clamp(34px,9vw,48px);
+  }
+
+  .hero .lead{margin-top:18px}
+  .hero .actions{margin-top:20px;justify-content:flex-start}
+
+  .hero .jangadeiro-quote{
+    margin-top:18px;
+    max-width:290px;
+  }
+
+  .hero .jangadeiro-quote:after{
+    margin-left:0;
+  }
+
+  .hero .metric{
+    min-height:72px;
+  }
+}
+</style>
+
+
+<style>
+/* FINAL TEXT POSITION / CONTRAST TWEAKS */
+.hero .eyebrow,
+.hero h1,
+.hero .lead,
+.hero .actions,
+.hero .jangadeiro-quote{
+  width:430px;
+  max-width:430px;
+  justify-self:end;
+  text-align:right;
+  color:#073b56;
+}
+
+/* move the whole upper copy farther right */
+.hero .eyebrow,
+.hero h1,
+.hero .lead{
+  transform:translateX(72px);
+}
+
+/* compact title */
+.hero h1{
+  font-size:clamp(28px,2.55vw,41px);
+  line-height:.92;
+}
+
+/* darker descriptive copy and force 3 clean lines */
+.hero .lead{
+  margin-top:126px;
+  font-size:14px;
+  line-height:1.45;
+  font-weight:600;
+  color:#073b56;
+}
+
+/* darker jangadeiro concept quote */
+.hero .jangadeiro-quote{
+  color:#073b56;
+  font-weight:600;
+  text-shadow:0 1px 1px rgba(255,255,255,.35);
+}
+
+/* keep lower strip subtle */
+.hero .metrics{
+  background:rgba(4,55,78,.24);
+}
+</style>
+
+
+<style>
+/* ===== FINAL HERO FIX: NO OVERLAPS ===== */
+
+/* Right column stays on the right, but its children now flow normally */
+.hero .wrap{
+  grid-template-columns:1fr minmax(500px,560px);
+}
+
+.hero .eyebrow,
+.hero h1,
+.hero .lead,
+.hero .actions,
+.hero .jangadeiro-quote{
+  grid-column:2;
+  width:100%;
+  max-width:520px;
+  justify-self:end;
+  transform:none !important;
+  text-align:right;
+  color:#073b56;
+}
+
+/* Position each item on separate grid rows so they can never overlap */
+.hero .eyebrow{
+  grid-row:1;
+  align-self:start;
+  margin:0 0 0;
+  font-size:9px;
+  line-height:1.35;
+  letter-spacing:.22em;
+}
+
+.hero h1{
+  grid-row:1;
+  align-self:start;
+  margin:30px 0 0;
+  font-size:clamp(27px,2.45vw,40px);
+  line-height:.92;
+}
+
+.hero .lead{
+  grid-row:1;
+  align-self:start;
+  margin:128px 0 0;
+  max-width:520px;
+  font-size:13px;
+  line-height:1.55;
+  font-weight:650;
+  color:#073b56;
+}
+
+.hero .actions{
+  grid-row:1;
+  align-self:start;
+  margin:205px 0 0;
+  display:flex;
+  justify-content:flex-end;
+  gap:16px;
+}
+
+.hero .jangadeiro-quote{
+  grid-row:1;
+  align-self:start;
+  margin:286px 0 0;
+  max-width:300px;
+  font-size:13px;
+  line-height:1.45;
+  font-weight:650;
+  color:#073b56;
+}
+
+/* Bottom capability strip remains subtle */
+.hero .metrics{
+  background:rgba(4,55,78,.22);
+}
+
+/* Mobile: restore natural stacked flow */
+@media(max-width:900px){
+  .hero .wrap{
+    display:flex;
+    flex-direction:column;
+  }
+
+  .hero .eyebrow,
+  .hero h1,
+  .hero .lead,
+  .hero .actions,
+  .hero .jangadeiro-quote{
+    width:100%;
+    max-width:520px;
+    text-align:left;
+    margin-left:0;
+    margin-right:0;
+  }
+
+  .hero .eyebrow{margin-top:0}
+  .hero h1{margin-top:14px}
+  .hero .lead{margin-top:18px}
+  .hero .actions{margin-top:20px;justify-content:flex-start}
+  .hero .jangadeiro-quote{margin-top:20px}
+}
+</style>
+
+</head>
+<body>
+<nav><div class="wrap inner"><a class="brandblock" href="#top"><span class="brand">JANGADEIRO</span><span class="descriptor">Flight Simulation Engineering</span><span class="tagline">Guidance · Navigation · Control</span></a><div class="navlinks"><a href="#services">Services</a><a href="#process">Process</a><a href="#about">About</a><a href="#contact">Contact</a></div></div></nav>
+<main id="top">
+<header class="hero"><div class="wrap"><div class="eyebrow">Aerospace Engineering / Simulation + Control</div><h1>From concept to<br><em>virtual flight</em></h1><p class="lead">
+      Custom engineering simulations for UAVs, airships and experimental aircraft<br>
+      From aerodynamic data to 6-DoF flight dynamics, control laws<br>
+      SIL/HIL and virtual flight.
+    </p><div class="actions"><a class="btn primary" href="#contact">Discuss a project</a><a class="btn" href="#services">Explore capabilities</a></div><div class="jangadeiro-quote">“Inspired by the jangadeiro:<br>small boat, vast horizons.”</div><div class="metrics"><div class="metric"><strong>6-DoF</strong><small>Flight dynamics</small></div><div class="metric"><strong>GNC</strong><small>Guidance · Navigation · Control</small></div><div class="metric"><strong>SIL / HIL</strong><small>Autopilot integration</small></div><div class="metric"><strong>CFD → Flight</strong><small>End-to-end modeling</small></div></div></div></header>
+<section id="services"><div class="wrap"><div class="sectionhead"><h2>Engineering the aircraft before it flies.</h2><p>Jangadeiro builds tailored simulation environments around your vehicle, your aerodynamic data and your development objectives.</p></div><div class="cards"><article class="card"><span class="num">01</span><h3>Aerodynamic Modeling</h3><p>From analytical models and aerodynamic databases to CFD-derived coefficients, interpolation and force/moment models.</p></article><article class="card"><span class="num">02</span><h3>6-DoF Flight Dynamics</h3><p>Rigid-body equations of motion, atmosphere, wind and turbulence, propulsion, actuators, sensors and vehicle-specific physics.</p></article><article class="card"><span class="num">03</span><h3>Guidance, Navigation & Control</h3><p>Control architecture, allocation, stability augmentation, autopilot development, tuning and nonlinear simulation.</p></article><article class="card"><span class="num">04</span><h3>SIL / HIL</h3><p>Connect the flight model to embedded or autopilot software for software- and hardware-in-the-loop validation.</p></article><article class="card"><span class="num">05</span><h3>Model Matching</h3><p>Use flight-test data to compare, identify and refine simulation behavior against the real vehicle.</p></article><article class="card"><span class="num">06</span><h3>3D Visualization</h3><p>Turn engineering states into an intuitive virtual flight environment for demonstrations, analysis and operator interaction.</p></article></div></div></section>
+<section id="process"><div class="wrap"><div class="sectionhead"><h2>From data to virtual flight.</h2><p>A modular workflow that can start with an existing aerodynamic database or from the early definition of a new vehicle.</p></div><div class="pipeline"><div class="step"><b>01 · Inputs</b><span>Geometry · Mass · Inertia · Propulsion</span></div><div class="arrow">→</div><div class="step"><b>02 · Aerodynamics</b><span>CFD · Data · Coefficients</span></div><div class="arrow">→</div><div class="step"><b>03 · 6-DoF</b><span>Dynamics · Environment · Actuators</span></div><div class="arrow">→</div><div class="step"><b>04 · GNC</b><span>Control · Allocation · Autonomy</span></div><div class="arrow">→</div><div class="step"><b>05 · Validation</b><span>SIL · HIL · Flight data</span></div></div></div></section>
+<section class="about" id="about"><div class="wrap"><div class="eyebrow">Why Jangadeiro?</div><p class="quote">A jangadeiro navigates by understanding <span>wind, forces, balance, direction and motion.</span> We bring the same physics-first thinking to flight simulation.</p><p class="aboutcopy">Jangadeiro is an independent simulation-engineering concept focused on clear models for complex vehicles. The objective is simple: give engineering teams a virtual aircraft they can use to design, test and understand the real one.</p><div class="tech"><span class="pill">MATLAB / Simulink</span><span class="pill">C / C++</span><span class="pill">Python</span><span class="pill">PX4</span><span class="pill">ROS 2</span><span class="pill">CFD workflows</span><span class="pill">Unreal / 3D integration</span></div></div></section>
+<section id="contact"><div class="wrap"><div class="contactbox"><div class="eyebrow">Start a project</div><h2>Build your virtual aircraft.</h2><p>Developing a UAV, airship or experimental aircraft? Tell us what data you already have and what you need to validate. We can define the simulation scope together.</p><div class="contactrow"><a class="btn primary" href="mailto:contact@jangadeiro.aero">contact@jangadeiro.aero</a><span style="color:var(--muted);font-size:14px">Paris · France · Remote worldwide</span></div></div></div></section>
+</main>
+<footer><div class="wrap footerin"><span>© 2026 Jangadeiro Flight Simulation Engineering</span><span>Aerodynamics · Flight Dynamics · GNC · SIL/HIL</span></div></footer>
+</body></html>
